@@ -7,7 +7,7 @@ async function main() {
 
   await stake.deployed();
 
-  
+  //ether.getSigner;
  // const getBalance = await stake.contractBalance();
   //console.log("first function", getBalance);
   ////////////////////////
