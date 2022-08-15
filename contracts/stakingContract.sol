@@ -8,6 +8,7 @@ contract stake {
     struct depositor{
         uint256 amountOfDays;
         uint amountOfEther;
+        uint amountYears;
     }
     mapping (address => depositor) balanceEther;
     mapping (address => uint) balanceCoin;
@@ -29,7 +30,9 @@ contract stake {
         uint valueDeposited = msg.value;
         deposit.amountOfEther += valueDeposited;
         uint numOfDays = (_amountOfDays * 1 days) + block.timestamp;
+        uint numYear = (_amountOfDays * 1 days) + 365 + block.timestamp;
         deposit.amountOfDays += numOfDays;
+        deposit.amountYears += numYear;
         depositDEG(valueDeposited);
     }
 
@@ -44,8 +47,8 @@ contract stake {
         //payable(address(this)).transfer(msg.value);
     }
 
-     function calculateApy (uint _amountDeposited, uint _amountOfDays) public pure returns(uint percentage) {
-        percentage = (_amountOfDays / 365) * _amountDeposited; 
+     function calculateApy (uint _amountDeposited, uint _amountOfDays, uint numInYear) public pure returns(uint percentage) {
+        percentage = (_amountOfDays / numInYear) * _amountDeposited; 
     }
 
     function withDraw (uint _amount) external {
@@ -55,7 +58,7 @@ contract stake {
         uint balance = deposit.amountOfEther;
         uint daysLeft = deposit.amountOfDays + block.timestamp;
         require(block.timestamp > daysLeft, "You can't withdraw now");
-        uint interest = calculateApy(balance, deposit.amountOfDays);
+        uint interest = calculateApy(balance, deposit.amountOfDays, deposit.amountYears);
         uint paying = interest + _amount;
         deposit.amountOfEther -= _amount;
         balanceCoin[msg.sender] -= _amount;
